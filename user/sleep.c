@@ -4,6 +4,8 @@
 int main(int argc,char* argv[]){
     if(argc != 2){
         printf("Sleep needs one argument!\n"); //检查参数数量是否正确
+        printf("argc=%d\n", argc);
+        printf("argv=%s, %s, %s\n", argv[0], argv[1], argv[2]);
         exit(-1);
     }
     int ticks = atoi(argv[1]); //将字符串参数转为整数
