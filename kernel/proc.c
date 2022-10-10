@@ -280,6 +280,9 @@ fork(void)
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
+  // 需要提前在proc.h中声明mask。用来继承父进程的mask
+  np->mask = p->mask;
+
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
@@ -692,4 +695,37 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+// 计算空闲进程数量
+uint64 
+nproc_calculate(void)
+{
+  uint64 nproc_num = 0;
+  struct proc *pTemp;
+  
+  for(pTemp = proc; pTemp < &proc[NPROC]; pTemp++){
+    acquire(&pTemp->lock);
+    if(pTemp->state == UNUSED){
+      nproc_num++;
+    }
+    release(&pTemp->lock);
+  }
+  return nproc_num;
+}
+
+// 计算空闲文件描述符
+uint64
+freefd_calculate(void)
+{
+  uint64 freefd_num = 0;
+  struct proc *p = myproc();
+  acquire(&p->lock);
+  for(int fd =0; fd < NOFILE; fd++){
+    if(p->ofile[fd] == 0){
+      freefd_num++;
+    }
+  }
+  release(&p->lock);
+  return freefd_num;
 }

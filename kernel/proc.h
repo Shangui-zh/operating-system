@@ -103,4 +103,7 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  // 声明kernel/sysproc.c中函数sys_trace的mask变量
+  int mask;
 };

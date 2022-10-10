@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -94,4 +95,40 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// 新增的trace 函数
+uint64
+sys_trace(void)
+{
+  int temp;
+  if(argint(0, &temp) < 0){
+    return -1;
+  }
+  // 需提前在proc.h中声明
+  myproc()->mask = temp;
+  return 0;
+}
+
+// 新的sysinfo函数
+uint64
+sys_sysinfo(void)
+{
+  // 存放用户态传入的参数
+  uint64 temp;
+  if(argaddr(0, &temp) < 0){
+    return -1;
+  }
+  struct proc *pTemp = myproc();
+  struct sysinfo infoTemp;
+
+  // 调用自己写的计算剩余空间(kalloc.c)，计算空闲进程数(proc.c)，计算可用文件描述符(proc.c)。函数名在defs.h
+  infoTemp.freemem = freemem_calculate();
+  infoTemp.nproc = nproc_calculate();
+  infoTemp.freefd = freefd_calculate();
+
+  if(copyout(pTemp->pagetable, temp, (char *)&infoTemp, sizeof(infoTemp)) < 0){
+    return -1;
+  }
+  return 0;
 }
