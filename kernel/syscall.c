@@ -8,6 +8,7 @@
 #include "defs.h"
 
 // Fetch the uint64 at addr from the current process.
+// 获取当前进程的addr处的uint64
 int
 fetchaddr(uint64 addr, uint64 *ip)
 {
@@ -21,6 +22,8 @@ fetchaddr(uint64 addr, uint64 *ip)
 
 // Fetch the nul-terminated string at addr from the current process.
 // Returns length of string, not including nul, or -1 for error.
+// 获取当前进程的 addr 处的以 nul 结尾的字符串。
+// 返回字符串的长度，不包括 nul，或表示错误的-1
 int
 fetchstr(uint64 addr, char *buf, int max)
 {
@@ -31,6 +34,7 @@ fetchstr(uint64 addr, char *buf, int max)
   return strlen(buf);
 }
 
+// 获取用户线程trap内核之前的寄存器的信息
 static uint64
 argraw(int n)
 {
@@ -54,6 +58,8 @@ argraw(int n)
 }
 
 // Fetch the nth 32-bit system call argument.
+// 获取第 n 个 32 位系统调用参数
+// 获取第n个寄存器的信息，并用int型指针指向它
 int
 argint(int n, int *ip)
 {
@@ -64,6 +70,8 @@ argint(int n, int *ip)
 // Retrieve an argument as a pointer.
 // Doesn't check for legality, since
 // copyin/copyout will do that.
+// 检索参数作为指针。 不检查合法性，因为copyin/copyout将做到这一点。
+// 获取第n个寄存器的信息，并用uint64型指针指向它，此内容应为地址
 int
 argaddr(int n, uint64 *ip)
 {
@@ -74,6 +82,9 @@ argaddr(int n, uint64 *ip)
 // Fetch the nth word-sized system call argument as a null-terminated string.
 // Copies into buf, at most max.
 // Returns string length if OK (including nul), -1 if error.
+// 获取第 n 个单词大小的系统调用参数作为以 null 结尾的字符串。
+// 最多复制到 buf
+// 如果 OK（包括 nul）返回字符串长度，如果错误则返回 -1。
 int
 argstr(int n, char *buf, int max)
 {
@@ -129,7 +140,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_trace]   sys_trace,
+[SYS_trace]   sys_trace,        // 新加的
 [SYS_sysinfo] sys_sysinfo,
 };
 
